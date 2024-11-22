@@ -4,7 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { routes } from "@/config/routes.config";
+import { routesConfig } from "@/config/routes.config";
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
@@ -30,11 +30,15 @@ export const signUpAction = async (formData: FormData) => {
 
   if (error) {
     console.error(error.code + " " + error.message);
-    return encodedRedirect("error", routes.unprotected.signUp, error.message);
+    return encodedRedirect(
+      "error",
+      routesConfig.unprotected.signUp,
+      error.message
+    );
   } else {
     return encodedRedirect(
       "success",
-      routes.unprotected.signIn,
+      routesConfig.unprotected.signIn,
       "Thanks for signing up! Please check your email for a verification link."
     );
   }
@@ -68,14 +72,14 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=${routes.protected.resetPassword}`,
+    redirectTo: `${origin}/auth/callback?redirect_to=${routesConfig.protected.resetPassword}`,
   });
 
   if (error) {
     console.error(error.message);
     return encodedRedirect(
       "error",
-      routes.unprotected.forgotPassword,
+      routesConfig.unprotected.forgotPassword,
       "Could not reset password"
     );
   }
@@ -86,7 +90,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
 
   return encodedRedirect(
     "success",
-    routes.unprotected.forgotPassword,
+    routesConfig.unprotected.forgotPassword,
     "Check your email for a link to reset your password."
   );
 };
@@ -100,7 +104,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (!password || !confirmPassword) {
     encodedRedirect(
       "error",
-      routes.protected.resetPassword,
+      routesConfig.protected.resetPassword,
       "Password and confirm password are required"
     );
   }
@@ -108,7 +112,7 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (password !== confirmPassword) {
     encodedRedirect(
       "error",
-      routes.protected.resetPassword,
+      routesConfig.protected.resetPassword,
       "Passwords do not match"
     );
   }
@@ -120,14 +124,14 @@ export const resetPasswordAction = async (formData: FormData) => {
   if (error) {
     encodedRedirect(
       "error",
-      routes.protected.resetPassword,
+      routesConfig.protected.resetPassword,
       "Password update failed"
     );
   }
 
   encodedRedirect(
     "success",
-    routes.protected.resetPassword,
+    routesConfig.protected.resetPassword,
     "Password updated"
   );
 };
@@ -135,5 +139,5 @@ export const resetPasswordAction = async (formData: FormData) => {
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  return redirect(routes.unprotected.signIn);
+  return redirect(routesConfig.unprotected.signIn);
 };

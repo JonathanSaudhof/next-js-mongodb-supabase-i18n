@@ -1,4 +1,6 @@
-export const routes = {
+import { registerRoutes } from "./routes";
+
+export const routesConfig = {
   protected: {
     home: "/space",
     resetPassword: "/space/reset-password",
@@ -10,3 +12,7 @@ export const routes = {
     forgotPassword: "/forgot-password",
   },
 };
+
+const getRoutesWithLocale = registerRoutes(routesConfig);
+
+export default getRoutesWithLocale;
